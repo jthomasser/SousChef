@@ -1,5 +1,17 @@
 #!/bin/sh
 
+VERSION=`git --version | awk '{print $3}'`
+MAJOR=`echo $VERSION | awk -F. '{print $1}' `
+MINOR=`echo $VERSION | awk -F. '{print $2}' `
+MICRO=`echo $VERSION | awk -F. '{print $3}' `
+echo $VERSION $MAJOR $MINOR $MICRO
+if [ $MAJOR -ge 1 -a $MINOR -ge 7 -a $MICRO -ge 10 ] ; then
+echo version OK
+else
+     you need version 1.7.10 of GIT or better
+     exit 1
+fi
+
 echo "Setting up a git repo"
 echo ""
 echo "Updating git global defintions. These can be found in ~/.gitconfig "
