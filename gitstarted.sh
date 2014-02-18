@@ -1,19 +1,23 @@
 #!/bin/sh
 
+#
+# Detirmine version, if its new than 1.7.10 user can use https for 
+# github accessing repo.
+#
+#
 VERSION=`git --version | awk '{print $3}'`
-MAJOR=`echo $VERSION | awk -F. '{print $1}' `
+MAJOR=`echo $VERSION | awk -F. '{print $1}' ` 
 MINOR=`echo $VERSION | awk -F. '{print $2}' `
 MICRO=`echo $VERSION | awk -F. '{print $3}' `
-echo $VERSION $MAJOR $MINOR $MICRO
 if [ $MAJOR -ge 1 -a $MINOR -ge 7 -a $MICRO -ge 10 ] ; then
-echo version OK
+	echo version OK
 else
-     you need version 1.7.10 of GIT or better
-     exit 1
+     	echo "You need version 1.7.10 of GIT or better, this allows https access to github"
+     	echo "Exiting...."
+     	exit 1
 fi
 
-echo "Setting up a git repo"
-echo ""
+echo "Setting up a git repo using local directory"
 echo "Updating git global defintions. These can be found in ~/.gitconfig "
 
 #
@@ -21,15 +25,33 @@ echo "Updating git global defintions. These can be found in ~/.gitconfig "
 #
 # Sets the default name for git to use when you commit
 #
-echo -n "Enter username: "
-read USERNAME
-git config --global user.name "$USERNAME"
+# git config --get user.name
+#
+USERNAME=`git config --get user.name`
+if [ "$USERNAME" != "" ] ; then 
+	echo Using username  "$USERNAME"
+	
+else
+
+	echo -n "Enter your Name (First Last): "
+	read USERNAME
+	git config --global user.name "$USERNAME"
+
+fi
 #
 # Sets the default email for git to use when you commit
 #
-echo -n "Enter email: "
-read EMAIL
-git config --global user.email "$EMAIL"
+#
+# git config --get user.email
+#
+EMAIL=`git config --get user.email`
+if [ "$EMAIL" != "" ] ; then 
+	echo Using email "$EMAIL"
+else
+	echo -n "Enter email: "
+	read EMAIL
+	git config --global user.email "$EMAIL"
+fi
 #
 # Set git to use the credential memory cache
 #
@@ -45,18 +67,13 @@ git config --global credential.helper 'cache --timeout=3600'
 #
 
 REPONAME=`basename $PWD` 
-echo "create repo using current foldername, reponame will be $REPONAME"
-read answer
+echo "Create repo using current foldername, reponame will be $REPONAME"
 
 echo -n "Go to to github site and create a repo, press <return> when done: "
 read answer
 
 RESPONSE=no
 while [ "$RESPONSE" != "yes" ] ; do 
-
-	echo -n "Enter github username: "
-	read USERNAME
-
 	echo -n "Enter RepoName: "
 	read REPONAME
 
